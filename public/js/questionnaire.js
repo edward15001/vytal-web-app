@@ -331,11 +331,11 @@ async function registerUser() {
             await submitQuestionnaire();
             if (updateMode) {
                 lastAccess = null;
-                document.getElementById('successText').innerHTML =
-                    'Hemos actualizado tu plan con tus nuevos datos. Tu menú semanal, tu rutina de entrenamiento y tu suplementación ya se han recalculado.';
                 document.querySelectorAll('.quiz-card').forEach(card => { card.style.display = 'none'; });
                 currentStep = 8;
                 document.getElementById('step-8').style.display = 'block';
+                document.body.classList.add('success-mode');
+                renderSuccess();
                 updateProgress();
             } else {
                 // Re-suscripción: ir a guardar tarjeta

@@ -723,7 +723,6 @@ function renderTrainingTab() {
     ${trainView === 'week' ? `
     <div class="dg-session-head">
       <div class="dg-session-title">${capitalizeFirst(sessionForTable?.tipo || 'libre')} · ${dateStr}</div>
-      ${sessionForTable ? `<button class="btn-cta btn-cta--arcilla">Empezar sesión <span class="btn-cta-arrow">${ICON('play', 16)}</span></button>` : ''}
     </div>
     ${sessionForTable ? `
     <table class="dg-ex-table">

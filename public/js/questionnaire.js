@@ -328,9 +328,10 @@ async function registerUser() {
         showLoading(updateMode ? 'Actualizando tu plan...' : 'Guardando tus datos...');
         try {
             authToken = localStorage.getItem('vytal_token');
-            await submitQuestionnaire();
+            const qRes = await submitQuestionnaire();
             if (updateMode) {
                 lastAccess = null;
+                lastPlan = qRes && qRes.plan ? qRes.plan : null;
                 document.querySelectorAll('.quiz-card').forEach(card => { card.style.display = 'none'; });
                 currentStep = 8;
                 document.getElementById('step-8').style.display = 'block';

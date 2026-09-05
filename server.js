@@ -30,6 +30,7 @@ app.use('/api/questionnaire', require('./routes/questionnaire'));
 app.use('/api/subscription', require('./routes/subscription'));
 app.use('/api/plan', require('./routes/plans'));
 app.use('/api/checkin', require('./routes/checkin'));
+app.use('/api/training', require('./routes/training'));
 app.use('/api/access', require('./routes/access'));
 app.use('/api/foodlog', require('./routes/foodLog'));
 

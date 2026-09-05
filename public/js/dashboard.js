@@ -13,6 +13,7 @@ let planData = null;
 let subData = null;
 let paymentHistory = [];
 let todayLog = null;   // resumen del diario alimentario de hoy (/api/foodlog/today)
+let todayTrainingSession = null; // sesión de hoy registrada desde la app móvil (/api/training/session/today)
 
 // ¿El usuario tiene acceso PRO? Proviene del campo access de /api/plan;
 // para planes antiguos sin acceso, se deriva del estado de la suscripción.
@@ -26,7 +27,7 @@ function isProUser() {
 document.addEventListener('DOMContentLoaded', async () => {
   initTopbar();
   try {
-    await Promise.all([loadPlan(), loadSubscription(), loadPaymentHistory()]);
+    await Promise.all([loadPlan(), loadSubscription(), loadPaymentHistory(), loadTrainingSession()]);
     loadTodayLog(); // opcional: no bloquea el render si falla
     renderDashboard();
     // Check-in semanal: preguntar si lleva 7+ días sin actividad
@@ -97,6 +98,18 @@ async function loadTodayLog() {
     if (res.ok) todayLog = await res.json();
   } catch (err) {
     console.warn('foodlog/today no disponible:', err.message);
+  }
+}
+
+// Sesión de hoy registrada desde la app móvil (duración real, si existe)
+async function loadTrainingSession() {
+  try {
+    const res = await fetchDashboard('/api/training/session/today', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (res.ok) todayTrainingSession = await res.json();
+  } catch (err) {
+    console.warn('training/session/today no disponible:', err.message);
   }
 }
 
@@ -705,8 +718,8 @@ function renderTrainingTab() {
     <div class="dg-stats">
       <div class="dg-stat">
         <span class="dg-kicker">Sesión de hoy</span>
-        <div class="dg-stat-num">${todaySession ? (SESSION_META[todaySession.tipo?.toLowerCase()]?.min || 45) + ' min' : '0 min'}</div>
-        <div class="dg-stat-sub">${todaySession ? (todaySession.ejercicios || []).length + ' ejercicios · ' + (todaySession.ejercicios || []).reduce((n, e) => n + (parseExerciseSpec(e)?.series || 0), 0) + ' series' : 'Día libre · recuperación'}</div>
+        <div class="dg-stat-num">${todayTrainingSession ? todayTrainingSession.duration_min + ' min' : todaySession ? (SESSION_META[todaySession.tipo?.toLowerCase()]?.min || 45) + ' min' : '0 min'}</div>
+        <div class="dg-stat-sub">${todayTrainingSession ? 'Entrenado hoy · registrado desde la app' : todaySession ? (todaySession.ejercicios || []).length + ' ejercicios · ' + (todaySession.ejercicios || []).reduce((n, e) => n + (parseExerciseSpec(e)?.series || 0), 0) + ' series' : 'Día libre · recuperación'}</div>
       </div>
       <div class="dg-stat">
         <span class="dg-kicker">Volumen semanal</span>

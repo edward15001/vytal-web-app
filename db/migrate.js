@@ -61,6 +61,23 @@ const MIGRATIONS = [
   )`,
   `CREATE INDEX IF NOT EXISTS idx_food_log_user_date ON food_log(user_id, meal_date)`,
 
+  // Sesiones de entrenamiento registradas desde la app móvil (duración real
+  // de la sesión completada, para mostrarla en el dashboard web).
+  `CREATE TABLE IF NOT EXISTS training_sessions (
+    id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id       UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    session_date  DATE NOT NULL DEFAULT CURRENT_DATE,
+    duration_min  INTEGER NOT NULL CHECK (duration_min > 0),
+    created_at    TIMESTAMPTZ DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_training_sessions_user_date ON training_sessions(user_id, session_date)`,
+  `DO $$ BEGIN
+     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'training_sessions_user_id_session_date_key') THEN
+       ALTER TABLE training_sessions ADD CONSTRAINT training_sessions_user_id_session_date_key UNIQUE (user_id, session_date);
+     END IF;
+   END $$`,
+
   // Sólo un registro de cuestionario y un plan por usuario (para el upsert ON CONFLICT).
   // PostgreSQL no soporta ADD CONSTRAINT IF NOT EXISTS, así que comprobamos pg_constraint.
   `DO $$ BEGIN

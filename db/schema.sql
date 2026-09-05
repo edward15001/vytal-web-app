@@ -134,6 +134,22 @@ CREATE TABLE IF NOT EXISTS food_log (
 
 CREATE INDEX IF NOT EXISTS idx_food_log_user_date ON food_log(user_id, meal_date);
 
+-- ─── Sesiones de entrenamiento registradas (app móvil) ──────
+-- Duración real de la sesión completada, para mostrarla en el dashboard
+-- web en vez de la estimación del plan.
+CREATE TABLE IF NOT EXISTS training_sessions (
+    id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id       UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    session_date  DATE NOT NULL DEFAULT CURRENT_DATE,
+    duration_min  INTEGER NOT NULL CHECK (duration_min > 0),
+    created_at    TIMESTAMPTZ DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ DEFAULT NOW(),
+    -- Una sesión registrada por usuario y día (la app hace upsert)
+    UNIQUE(user_id, session_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_training_sessions_user_date ON training_sessions(user_id, session_date);
+
 -- ─── Índices ─────────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);

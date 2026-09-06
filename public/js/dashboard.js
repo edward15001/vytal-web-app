@@ -664,7 +664,7 @@ function renderTrainingTab() {
   const weekCells = TRAIN_DAYS_FULL.map((d, i) => {
     const s = sessionByDay[d];
     const isToday = i === todayIdx;
-    const meta = s ? null : (d === 'Sábado' ? SESSION_META.cardio : SESSION_META.descanso);
+    const meta = s ? null : SESSION_META.descanso;
     const tipo = s ? s.tipo : (meta ? meta.label : 'Libre');
     const min = s ? (SESSION_META[s.tipo?.toLowerCase()]?.min || 45) : (meta ? meta.min : null);
     return `
